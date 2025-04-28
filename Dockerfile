@@ -1,3 +1,4 @@
+# Use PHP-FPM as the base image
 FROM php:8.1-fpm
 
 # Install system dependencies
@@ -9,7 +10,8 @@ RUN apt-get update -y && apt-get install -y \
     libfreetype6-dev \
     zip \
     libzip-dev \
-    && rm -rf /var/lib/apt/lists/*  # Clean up apt cache
+    nginx \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg && \
@@ -23,14 +25,17 @@ RUN curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/lo
 # Set working directory
 WORKDIR /var/www
 
-# Copy the Laravel app into the container
+# Copy Laravel application into the container
 COPY . .
 
 # Install Laravel dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Expose the PHP-FPM port
-EXPOSE 9000
+# Copy Nginx config
+COPY ./nginx/default.conf /etc/nginx/sites-available/default
 
-# Start PHP-FPM server
-CMD ["php-fpm"]
+# Expose PHP-FPM and HTTP port (80)
+EXPOSE 9000 80
+
+# Start PHP-FPM and Nginx together
+CMD service nginx start && php-fpm
