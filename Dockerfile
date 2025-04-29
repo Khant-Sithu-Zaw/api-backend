@@ -11,13 +11,12 @@ RUN apt-get update -y && apt-get install -y \
     zip \
     libzip-dev \
     nginx \
+    supervisor \
     && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg && \
-    echo "gd extension configured successfully" && \
-    docker-php-ext-install gd
-RUN docker-php-ext-install pdo pdo_mysql zip
+    docker-php-ext-install gd pdo pdo_mysql zip
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer
@@ -25,17 +24,20 @@ RUN curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/lo
 # Set working directory
 WORKDIR /var/www
 
-# Copy Laravel application into the container
+# Copy application source
 COPY . .
 
-# Install Laravel dependencies
+# Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
 # Copy Nginx config
-COPY ./nginx/default.conf /etc/nginx/sites-available/default
+COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
 
-# Expose PHP-FPM and HTTP port (80)
-EXPOSE 9000 80
+# Copy Supervisor config
+COPY ./supervisord.conf /etc/supervisord.conf
 
-# Start PHP-FPM and Nginx together
-CMD service nginx start && php-fpm
+# Expose ports
+EXPOSE 80
+
+# Command to run both nginx and php-fpm
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
