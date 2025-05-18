@@ -2,6 +2,7 @@
 namespace App\DAO;
 
 use App\Models\Food;
+use App\Models\Origin;
 use App\Models\Tag;
 use Illuminate\Support\Facades\DB;
 
@@ -19,5 +20,12 @@ public function getAllTag()
             ->get();
             return $tags;
 }
+   public function getAllOrigins(){
+      $origins = Origin::leftJoin('food_origin', 'origin.id', '=', 'food_origin.origin_id')
+         ->select('origin.id', 'origin.name as origin_name', DB::raw('COUNT(food_origin.food_id) as food_count'))
+         ->groupBy('origin.id', 'origin.name')
+         ->get();
 
+      return $origins;
+   }
 }

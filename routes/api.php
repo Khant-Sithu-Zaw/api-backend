@@ -27,9 +27,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 Route::get('foods', [FoodController::class, 'index']);
 Route::get('tags', [FoodController::class, 'getTags']);       // Get all foods
-
+Route::get('origins', [FoodController::class, 'getOrigins']);
+// Route::post('/login', [AuthController::class, 'login']);
 Route::post('/login', [AuthController::class, 'login']);
-
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 });

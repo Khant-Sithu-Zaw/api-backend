@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\UserDetail;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -87,4 +88,5 @@ class UserController extends Controller
                     'expiresAt' => $now->copy()->addMinutes(60)->toIso8601String()
                 ]);
     }
+
 }

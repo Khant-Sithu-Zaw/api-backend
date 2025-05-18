@@ -27,4 +27,7 @@ class FoodController extends Controller
     {
         return response()->json($this->foodService->getAllTags());
     }
+    public function getOrigins(){
+        return response()->json($this->foodService->getAllOrigins());
+    }
 }

@@ -22,5 +22,8 @@ class FoodService
     {
         return $this->foodDAO->getAllTag();
     }
+    public function getAllOrigins(){
+        return $this->foodDAO->getAllOrigins();
+    }
    
 }
